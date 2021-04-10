@@ -76,14 +76,8 @@ def scrape_games(league, season):
   df[['H_XG','A_XG']] = pd.DataFrame(df.XG.tolist(), index = df.index)
   df.drop(['H', 'A', 'GOALS', 'XG'], axis=1, inplace=True)
   
-  # convert some rows to numeric
-  df['ID'] = pd.to_numeric(df['ID'])
-  df['H_ID'] = pd.to_numeric(df['H_ID'])
-  df['A_ID'] = pd.to_numeric(df['A_ID'])
-  df['H_GOALS'] = pd.to_numeric(df['H_GOALS'])
-  df['A_GOALS'] = pd.to_numeric(df['A_GOALS'])
-  df['H_XG'] = pd.to_numeric(df['H_XG'])
-  df['A_XG'] = pd.to_numeric(df['A_XG'])
+  # convert columns to numeric if possible
+  df = df.apply(pd.to_numeric, errors='ignore')
   
   return df
 
@@ -200,18 +194,6 @@ def scrape_shots(game_id):
   
   # convert columns to numeric if possible
   df = df.apply(pd.to_numeric, errors='ignore')
-  
-  # # convert some rows to numeric
-  # df['ID'] = pd.to_numeric(df['ID'])
-  # df['MINUTE'] = pd.to_numeric(df['MINUTE'])
-  # df['X'] = pd.to_numeric(df['X'])
-  # df['Y'] = pd.to_numeric(df['Y'])
-  # df['XG'] = pd.to_numeric(df['XG'])
-  # df['PLAYER_ID'] = pd.to_numeric(df['PLAYER_ID'])
-  # df['SEASON'] = pd.to_numeric(df['SEASON'])
-  # df['MATCH_ID'] = pd.to_numeric(df['MATCH_ID'])
-  # df['H_GOALS'] = pd.to_numeric(df['H_GOALS'])
-  # df['A_GOALS'] = pd.to_numeric(df['A_GOALS'])
   
   return df
 
