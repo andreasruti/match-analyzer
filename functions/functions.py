@@ -90,6 +90,63 @@ def scrape_games(league, season):
 
 
 
+def scrape_rosters(game_id):
+  """
+  Scrape rosters of a game.
+  
+  Keyword arguments:
+  game_id -- (int) id of the game
+  
+  Returns:
+  data frame
+  """
+  
+  # ----------------------------------------------------------------------------
+  # setup and scrape
+  # ----------------------------------------------------------------------------
+  
+  game_id = int(game_id)
+  url = 'https://understat.com/match/' + str(game_id)
+  r = requests.get(url)
+  soup = BeautifulSoup(r.content, 'lxml')
+  scripts = soup.find_all('script')
+  
+  # get rosters data
+  strings = scripts[2].string
+  
+  # strip symbols so we only have json data
+  ind_start = strings.index("('") + 2
+  ind_end = strings.index("')")
+  
+  json_data = strings[ind_start : ind_end]
+  json_data = json_data.encode('utf8').decode('unicode_escape')
+  
+  # convert string to json format
+  data = json.loads(json_data)
+  
+  
+  # ----------------------------------------------------------------------------
+  # build data frame and format
+  # ----------------------------------------------------------------------------
+  
+  # build data frame, separated for h and a (home/away)
+  df = pd.concat({k: pd.DataFrame(v).T for k, v in data.items()}, axis=0)
+  
+  # column names to upper case
+  df.columns = map(str.upper, df.columns)
+  
+  # add match id
+  df['MATCH_ID'] = game_id
+  
+  # convert columns to numeric if possible
+  df = df.apply(pd.to_numeric, errors='ignore')
+  
+  return df
+
+
+
+
+
 def scrape_shots(game_id):
   """
   Scrape all shots of a game.
@@ -141,19 +198,23 @@ def scrape_shots(game_id):
   # unlist the PLAYER_ASSISTED column
   df['PLAYER_ASSISTED'] = df['PLAYER_ASSISTED'].apply(str)
   
-  # convert some rows to numeric
-  df['ID'] = pd.to_numeric(df['ID'])
-  df['MINUTE'] = pd.to_numeric(df['MINUTE'])
-  df['X'] = pd.to_numeric(df['X'])
-  df['Y'] = pd.to_numeric(df['Y'])
-  df['XG'] = pd.to_numeric(df['XG'])
-  df['PLAYER_ID'] = pd.to_numeric(df['PLAYER_ID'])
-  df['SEASON'] = pd.to_numeric(df['SEASON'])
-  df['MATCH_ID'] = pd.to_numeric(df['MATCH_ID'])
-  df['H_GOALS'] = pd.to_numeric(df['H_GOALS'])
-  df['A_GOALS'] = pd.to_numeric(df['A_GOALS'])
+  # convert columns to numeric if possible
+  df = df.apply(pd.to_numeric, errors='ignore')
+  
+  # # convert some rows to numeric
+  # df['ID'] = pd.to_numeric(df['ID'])
+  # df['MINUTE'] = pd.to_numeric(df['MINUTE'])
+  # df['X'] = pd.to_numeric(df['X'])
+  # df['Y'] = pd.to_numeric(df['Y'])
+  # df['XG'] = pd.to_numeric(df['XG'])
+  # df['PLAYER_ID'] = pd.to_numeric(df['PLAYER_ID'])
+  # df['SEASON'] = pd.to_numeric(df['SEASON'])
+  # df['MATCH_ID'] = pd.to_numeric(df['MATCH_ID'])
+  # df['H_GOALS'] = pd.to_numeric(df['H_GOALS'])
+  # df['A_GOALS'] = pd.to_numeric(df['A_GOALS'])
   
   return df
+
 
 
 
