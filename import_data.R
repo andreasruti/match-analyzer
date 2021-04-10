@@ -30,7 +30,7 @@ View(games2020$Bundesliga)
 # # import all rosters
 # years <- 2014:2020
 # for (i in years){
-#   import_shots("rosters", i)
+#   import_stats("rosters", i)
 # }
 
 import_stats(stats = "rosters", season = 2020)
@@ -47,7 +47,7 @@ View(rosters2020$Bundesliga)
 # # import all shots
 # years <- 2014:2020
 # for (i in years){
-#   import_shots("shots", i)
+#   import_stats("shots", i)
 # }
 
 import_stats(stats = "shots", season = 2020)
