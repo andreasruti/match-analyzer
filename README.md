@@ -1,2 +1,2 @@
 # match-analyzer
-The match analyzer is my project for fun
+The match analyzer is my project I do just for fun.
