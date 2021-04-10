@@ -36,12 +36,17 @@ import_games <- function(season = NULL) {
   
   # loop over leagues
   for (i in leagues) {
+    
+    cat("\n")
+    cat(paste0("Importing games of ", i, " (", season, ")..."))
+    
     tmp_list[[i]] <- scrape_games(league = i, season = season)
     saveRDS(tmp_list, file = file_name)
   }
   
-  cat(paste0(file_name, " imported."))
   cat("\n")
+  cat("\n")
+  cat(paste0(file_name, " imported."))
   
 }
 
@@ -108,6 +113,7 @@ import_shots <- function(season = NULL) {
   # export list
   saveRDS(tmp_list, file = file_name)
   
+  cat("\n")
   cat("\n")
   cat(paste0(file_name, " imported."))
   
