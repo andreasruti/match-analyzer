@@ -27,9 +27,16 @@ View(games2020$Bundesliga)
 # import rosters
 ################################################################################
 
-import_rosters()
+# # import all rosters
+# years <- 2014:2020
+# for (i in years){
+#   import_shots("rosters", i)
+# }
+
+import_stats(stats = "rosters", season = 2020)
 rosters2020 <- readRDS("data/rosters_2020.rds")
-str(rosters2020$Bundesliga)
+View(rosters2020$Bundesliga)
+
 
 
 
@@ -38,22 +45,15 @@ str(rosters2020$Bundesliga)
 ################################################################################
 
 # # import all shots
-# years <- 2016:2019
+# years <- 2014:2020
 # for (i in years){
-#   import_shots(i)
+#   import_shots("shots", i)
 # }
 
-import_shots(2016)
+import_stats(stats = "shots", season = 2020)
 shots2015 <- readRDS("data/shots_2015.rds")
 shots2020 <- readRDS("data/shots_2020.rds")
-shots2016 <- readRDS("data/shots_2016.rds")
-
-
-
-
-
-
-
+shots2017 <- readRDS("data/shots_2017.rds")
 
 
 
