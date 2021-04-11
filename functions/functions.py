@@ -18,7 +18,7 @@ import numpy as np
 
 def scrape_games(league, season):
   """
-  Scrape all seasons' games of a league.
+  Scrape seasons' games of a league.
   
   Keyword arguments:
   league -- (str) league name: EPL, La_liga, Bundesliga, Serie_A, Ligue_1
@@ -80,6 +80,65 @@ def scrape_games(league, season):
   df = df.apply(pd.to_numeric, errors='ignore')
   
   return df
+
+
+
+
+def scrape_players(league, season):
+  """
+  Scrape seasons' players data of a league.
+  
+  Keyword arguments:
+  league -- (str) league name: EPL, La_liga, Bundesliga, Serie_A, Ligue_1
+  season -- (int) season, e.g. 2020 for 2020/21
+  
+  Returns:
+  data frame
+  """
+  
+  # ----------------------------------------------------------------------------
+  # setup and scrape
+  # ----------------------------------------------------------------------------
+  
+  season = int(season)
+  url = 'https://understat.com/league/' + str(league) + '/' + str(season)
+  r = requests.get(url)
+  soup = BeautifulSoup(r.content, 'lxml')
+  scripts = soup.find_all('script')
+  
+  # get dates data
+  strings = scripts[3].string
+  
+  # strip symbols so we only have json data
+  ind_start = strings.index("('") + 2
+  ind_end = strings.index("')")
+  
+  json_data = strings[ind_start : ind_end]
+  json_data = json_data.encode('utf8').decode('unicode_escape')
+  
+  # convert string to json format
+  data = json.loads(json_data)
+  
+  
+  # ----------------------------------------------------------------------------
+  # build data frame and format
+  # ----------------------------------------------------------------------------
+  
+  # build dataframe
+  df = pd.DataFrame.from_dict(data)
+  
+  # column names to upper case
+  df.columns = map(str.upper, df.columns)
+  
+  # add league and season column
+  df['LEAGUE'] = league
+  df['SEASON'] = season
+  
+  # convert columns to numeric if possible
+  df = df.apply(pd.to_numeric, errors='ignore')
+  
+  return df
+
 
 
 
