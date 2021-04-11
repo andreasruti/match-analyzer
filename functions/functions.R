@@ -16,12 +16,13 @@ reticulate::source_python("functions/functions.py")
 # for import_data.R
 ################################################################################
 
-#' Import games of a seasons from the five leagues. For currrent season don't 
-#' define season argument!
+#' Import games and players data of a seasons from the five leagues. For 
+#' current season don't define season argument!
 #' 
+#' @param summary string - "games" or "players"
 #' @param season numeric value, e.g. 2019 for season 2020/21
 #' @return list containing 5 data frames (1 per league)
-import_games <- function(season = NULL) {
+import_summary <- function(summary, season = NULL) {
   
   if (is.null(season)) {
     current_date <- Sys.Date()
@@ -32,7 +33,7 @@ import_games <- function(season = NULL) {
   
   leagues <- c("EPL", "La_liga", "Bundesliga", "Serie_A", "Ligue_1")
   
-  file_name <- paste0("data/games_", season, ".rds")
+  file_name <- paste0("data/", summary, "-", season, ".rds")
   
   tmp_list <- list()
   
@@ -40,24 +41,33 @@ import_games <- function(season = NULL) {
   for (i in leagues) {
     
     cat("\n")
-    cat(paste0("Importing games of ", i, " (", season, ")..."))
+    cat(paste0("Importing ", summary, " of ", i, " (", season, ")..."))
     
-    tmp_list[[i]] <- scrape_games(league = i, season = season)
-    saveRDS(tmp_list, file = file_name)
+    if (summary == "games") {
+      tmp_list[[i]] <- scrape_games(league = i, season = season)
+    }
+    
+    if (summary == "players") {
+      tmp_list[[i]] <- scrape_players(league = i, season = season)
+    }
   }
+  
+  saveRDS(tmp_list, file = file_name)
   
   cat("\n")
   cat("\n")
   cat(paste0(file_name, " imported."))
+  cat("\n")
+  cat("\n")
 }
 
 
 
 
-#' Import shots of all the seasons' games from the five leagues. For currrent 
-#' season don't define season argument!
+#' Import stats of all the seasons' games from the five leagues. For current 
+#' season don't define season argument. Choose rosters or shots as stats.
 #' 
-#' @param stats char - "rosters" or "shots"
+#' @param stats string - "rosters" or "shots"
 #' @param season numeric value, e.g. 2019 for season 2020/21
 #' @return list containing 5 data frames (1 per league)
 import_stats <- function(stats, season = NULL) {
@@ -129,6 +139,8 @@ import_stats <- function(stats, season = NULL) {
   cat("\n")
   cat("\n")
   cat(paste0(file_name, " imported."))
+  cat("\n")
+  cat("\n")
 }
 
 
