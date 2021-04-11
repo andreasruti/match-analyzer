@@ -10,3 +10,6 @@ https://understat.com/
 - Bundesliga
 - Serie A
 - Ligue 1
+
+## Seasons
+As from season 2014/15
