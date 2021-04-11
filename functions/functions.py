@@ -12,6 +12,7 @@ import numpy as np
 
 
 
+
 ################################################################################
 # for functions.R (used in import_data.R)
 ################################################################################
@@ -139,6 +140,85 @@ def scrape_players(league, season):
   
   return df
 
+
+
+def scrape_teams(league, season):
+  """
+  Scrape seasons' teams data of a league.
+  
+  Keyword arguments:
+  league -- (str) league name: EPL, La_liga, Bundesliga, Serie_A, Ligue_1
+  season -- (int) season, e.g. 2020 for 2020/21
+  
+  Returns:
+  data frame
+  """
+  
+  # ----------------------------------------------------------------------------
+  # setup and scrape
+  # ----------------------------------------------------------------------------
+  
+  season = int(season)
+  url = 'https://understat.com/league/' + str(league) + '/' + str(season)
+  r = requests.get(url)
+  soup = BeautifulSoup(r.content, 'lxml')
+  scripts = soup.find_all('script')
+  
+  # get dates data
+  strings = scripts[2].string
+  
+  # strip symbols so we only have json data
+  ind_start = strings.index("('") + 2
+  ind_end = strings.index("')")
+  
+  json_data = strings[ind_start : ind_end]
+  json_data = json_data.encode('utf8').decode('unicode_escape')
+  
+  # convert string to json format
+  data = json.loads(json_data)
+  
+  
+  # ----------------------------------------------------------------------------
+  # build data frame and format
+  # ----------------------------------------------------------------------------
+  
+  # build dataframe
+  df_tmp = pd.DataFrame.from_dict(data).T
+  
+  # column names to upper case
+  df_tmp.columns = map(str.upper, df_tmp.columns)
+  
+  # unlist HISTORY column
+  df = pd.DataFrame([])
+  
+  for i in range(len(df_tmp.HISTORY)):
+    
+    # get history column
+    tmp = pd.DataFrame.from_dict(df_tmp.HISTORY[i])
+    
+    # add league and season column
+    tmp['LEAGUE'] = league
+    tmp['SEASON'] = season
+    
+    # add team
+    tmp['ID'] = df_tmp.ID[i]
+    tmp['TITLE'] = df_tmp.TITLE[i]
+    
+    # column names to upper case
+    tmp.columns = map(str.upper, tmp.columns)
+    
+    # unlist list columns and remove originals
+    tmp[['PPDA_ATT','PPDA_DEF']] = pd.DataFrame(tmp.PPDA.tolist(), index = tmp.index)
+    tmp[['PPDA_ALLOWED_ATT','PPDA_ALLOWED_DEF']] = pd.DataFrame(tmp.PPDA_ALLOWED.tolist(), index = tmp.index)
+    tmp.drop(['PPDA', 'PPDA_ALLOWED'], axis=1, inplace=True)
+    
+    # append data frame
+    df = df.append(tmp, ignore_index=True)
+  
+  # convert columns to numeric if possible
+  df = df.apply(pd.to_numeric, errors='ignore')
+  
+  return df
 
 
 
