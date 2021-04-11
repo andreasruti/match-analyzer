@@ -19,7 +19,7 @@ reticulate::source_python("functions/functions.py")
 #' Import games and players data of a seasons from the five leagues. For 
 #' current season don't define season argument!
 #' 
-#' @param summary string - "games" or "players"
+#' @param summary string - "games", "teams" or "players"
 #' @param season numeric value, e.g. 2019 for season 2020/21
 #' @return list containing 5 data frames (1 per league)
 import_summary <- function(summary, season = NULL) {
@@ -45,6 +45,10 @@ import_summary <- function(summary, season = NULL) {
     
     if (summary == "games") {
       tmp_list[[i]] <- scrape_games(league = i, season = season)
+    }
+    
+    if (summary == "teams") {
+      tmp_list[[i]] <- scrape_teams(league = i, season = season)
     }
     
     if (summary == "players") {
