@@ -17,8 +17,8 @@ source("functions/functions.R")
 # }
 
 import_summary(summary = "games")
-games2020 <- readRDS("data/games-2020.rds")
-View(games2020$Ligue_1)
+# games2020 <- readRDS("data/games-2020.rds")
+# View(games2020$EPL)
 
 
 
@@ -33,9 +33,8 @@ View(games2020$Ligue_1)
 # }
 
 import_summary(summary = "teams")
-teams2020 <- readRDS("data/teams-2020.rds")
-View(teams2020$Ligue_1)
-
+# teams2020 <- readRDS("data/teams-2020.rds")
+# View(teams2020$Ligue_1)
 
 
 ################################################################################
@@ -49,8 +48,8 @@ View(teams2020$Ligue_1)
 # }
 
 import_summary(summary = "players")
-players2020 <- readRDS("data/players-2020.rds")
-View(players2020$Ligue_1)
+# players2020 <- readRDS("data/players-2020.rds")
+# View(players2020$Ligue_1)
 
 
 
@@ -64,9 +63,10 @@ View(players2020$Ligue_1)
 #   import_stats("rosters", i)
 # }
 
-import_stats(stats = "rosters", season = 2020)
-rosters2020 <- readRDS("data/rosters_2020.rds")
-View(rosters2020$Bundesliga)
+import_stats(stats = "rosters", season = NULL)
+# import_stats(stats = "rosters", season = 2020)
+# rosters2020 <- readRDS("data/rosters-2020.rds")
+# View(rosters2020$Bundesliga)
 
 
 
@@ -75,16 +75,16 @@ View(rosters2020$Bundesliga)
 # import shots
 ################################################################################
 
-# # # import all shots
+# # import all shots
 # years <- 2014:2020
 # for (i in years){
 #   import_stats("shots", i)
 # }
 
-import_stats(stats = "shots", season = 2020)
-shots2015 <- readRDS("data/shots_2015.rds")
-shots2020 <- readRDS("data/shots_2020.rds")
-shots2017 <- readRDS("data/shots_2017.rds")
+import_stats(stats = "shots", season = NULL)
+# shots2015 <- readRDS("data/shots-2015.rds")
+# shots2020 <- readRDS("data/shots-2020.rds")
+# shots2017 <- readRDS("data/shots-2017.rds")
 
 
 
