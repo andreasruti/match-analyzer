@@ -72,33 +72,55 @@ import_summary <- function(summary, season = NULL) {
 #' season don't define season argument. Choose rosters or shots as stats.
 #' 
 #' @param stats string - "rosters" or "shots"
-#' @param season numeric value, e.g. 2019 for season 2020/21
+#' @param season numeric value, e.g. 2019 for season 2019/20, NULL for current 
+#' season update
 #' @return list containing 5 data frames (1 per league)
 import_stats <- function(stats, season = NULL) {
   
-  if (is.null(season)) {
+  # set update = TRUE if season is NULL
+  update <- if (is.null(season)) TRUE else FALSE
+  no_update_avbl <- 0
+  
+  # grab current season for update of most recent data
+  if (update) {
     current_date <- Sys.Date()
     current_month <- lubridate::month(current_date)
     current_year <- lubridate::year(current_date)
     season <- if (current_month > 7) current_year else current_year - 1
   }
   
-  tmp_games <- readRDS(paste0("data/games_", season, ".rds"))
+  tmp_games <- readRDS(paste0("data/games-", season, ".rds"))
   
   leagues <- c("EPL", "La_liga", "Bundesliga", "Serie_A", "Ligue_1")
   
-  file_name <- paste0("data/", stats, "_", season,".rds")
+  file_name <- paste0("data/", stats, "-", season,".rds")
   
   tmp_list <- list()
   
   # loop over leagues
   for (i in leagues) {
     
+    all_games <- tmp_games[[i]]
+    
+    if (update) {
+      
+      # read in stats table we have already
+      avbl_league_list <- readRDS(file_name)[[i]]
+      
+      # check which played games stats are imported already
+      avbl_ids <- unique(avbl_league_list$MATCH_ID)
+      
+      # only keep the games that are not there yet
+      all_games <- all_games %>% 
+        dplyr::filter(!ID %in% avbl_ids)
+      
+    }
+    
     # grab league's game ids
-    game_ids <- tmp_games[[i]] %>% 
-      # remove if game did not take place yet
-      dplyr::filter(!is.na(H_GOALS)) %>%
-      # remove if game doesn't have any stats
+    game_ids <- all_games %>% 
+      # keep played games only
+      dplyr::filter(ISRESULT) %>%
+      # remove if game doesn't have any stats (url doesn't provide any stats)
       dplyr::filter(H_XG != 0 | A_XG != 0) %>% 
       dplyr::pull(ID)
     
@@ -108,43 +130,69 @@ import_stats <- function(stats, season = NULL) {
     cat("\n")
     cat(paste0("Importing ", stats, " of ", i, " (", season, ")..."))
     cat("\n")
-    pb <- txtProgressBar(min = 0, 
-                         max = length(tmp_league_list), 
-                         initial = 0,
-                         style = 3) 
     
-    # loop over games
-    for (j in 1:length(tmp_league_list)) {
+    # jump to next iteration if no updates are available
+    if (length(game_ids) == 0) {
       
-      if (stats == "rosters") {
-        tmp_league_list[[j]] <- scrape_rosters(game_id = game_ids[j])
+      no_update_avbl <- no_update_avbl + 1
+      cat("No updates available!")
+      cat("\n")
+      
+    } else {
+      
+      pb <- txtProgressBar(min = 0, 
+                           max = length(tmp_league_list), 
+                           initial = 0,
+                           style = 3) 
+      
+      # loop over games
+      for (j in 1:length(tmp_league_list)) {
+        
+        if (stats == "rosters") {
+          tmp_league_list[[j]] <- scrape_rosters(game_id = game_ids[j])
+        }
+        
+        if (stats == "shots") {
+          tmp_league_list[[j]] <- scrape_shots(game_id = game_ids[j])
+        }
+        
+        setTxtProgressBar(pb, j)
       }
       
-      if (stats == "shots") {
-        tmp_league_list[[j]] <- scrape_shots(game_id = game_ids[j])
-      }
+      # name list elements with game id
+      names(tmp_league_list) <- game_ids
       
-      setTxtProgressBar(pb, j)
+      # convert list to data frame
+      tmp_league_df <- dplyr::bind_rows(tmp_league_list)
     }
     
-    # name list elements with game id
-    names(tmp_league_list) <- game_ids
-    
-    # convert list to data frame
-    tmp_league_df <- dplyr::bind_rows(tmp_league_list)
-    
     # add league's data frame to list
-    tmp_list[[i]] <- tmp_league_df
+    if (update & length(game_ids) != 0) {
+      
+      tmp_list[[i]] <- rbind(avbl_league_list, tmp_league_df)
+      
+    } else if (update & length(game_ids) == 0) {
+      
+      tmp_list[[i]] <- avbl_league_list
+      
+    } else {
+      
+      tmp_list[[i]] <- tmp_league_df
+      
+    }
   }
   
   # export list
-  saveRDS(tmp_list, file = file_name)
-  
-  cat("\n")
-  cat("\n")
-  cat(paste0(file_name, " imported."))
-  cat("\n")
-  cat("\n")
+  if (no_update_avbl != 5) {
+    
+    saveRDS(tmp_list, file = file_name)
+    
+    cat("\n")
+    cat("\n")
+    cat(paste0(file_name, " imported."))
+    cat("\n")
+    cat("\n")
+  }
 }
 
 
