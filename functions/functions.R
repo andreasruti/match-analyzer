@@ -4,7 +4,14 @@
 ################################################################################
 
 # load libraries
-suppressMessages(suppressWarnings(library(dplyr)))
+packages <- c("dplyr", "lubridate", "reticulate", "shiny", "shinydashboard",
+              "ggplot2", "plotly")
+
+suppressMessages(
+  suppressWarnings(
+    lapply(packages, require, character.only = TRUE)
+  )
+)
 
 # source python functions
 reticulate::source_python("functions/functions.py")
@@ -126,7 +133,6 @@ import_stats <- function(stats, season = NULL) {
     
     tmp_league_list <- vector("list", length(game_ids))
     
-    # showing progress
     cat("\n")
     cat(paste0("Importing ", stats, " of ", i, " (", season, ")..."))
     cat("\n")
@@ -140,10 +146,13 @@ import_stats <- function(stats, season = NULL) {
       
     } else {
       
-      pb <- txtProgressBar(min = 0, 
-                           max = length(tmp_league_list), 
-                           initial = 0,
-                           style = 3) 
+      # showing progress
+      pb <- txtProgressBar(
+        min = 0, 
+        max = length(tmp_league_list),
+        initial = 0,
+        style = 3
+      ) 
       
       # loop over games
       for (j in 1:length(tmp_league_list)) {
