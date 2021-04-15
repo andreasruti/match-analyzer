@@ -18,7 +18,7 @@ source("functions/functions.R")
 
 import_summary(summary = "games")
 # games2020 <- readRDS("data/games-2020.rds")
-# View(games2020$EPL)
+# View(games2020$Bundesliga)
 
 
 
@@ -34,7 +34,7 @@ import_summary(summary = "games")
 
 import_summary(summary = "teams")
 # teams2020 <- readRDS("data/teams-2020.rds")
-# View(teams2020$Ligue_1)
+# View(teams2020$Bundesliga)
 
 
 ################################################################################
@@ -49,7 +49,7 @@ import_summary(summary = "teams")
 
 import_summary(summary = "players")
 # players2020 <- readRDS("data/players-2020.rds")
-# View(players2020$Ligue_1)
+# View(players2020$Bundesliga)
 
 
 
@@ -85,25 +85,25 @@ import_stats(stats = "shots", season = NULL)
 # shots2015 <- readRDS("data/shots-2015.rds")
 # shots2020 <- readRDS("data/shots-2020.rds")
 # shots2017 <- readRDS("data/shots-2017.rds")
+# View(shots2020$Bundesliga)
 
 
 
-
-################################################################################
-# get tables - TEST
-################################################################################
-
-table_pl_2021 <- get_table(season = 2020, league = "Premier League")
-table_pl_0809 <- get_table(season = 2008, league = "Premier League")
-
-table_bl_2021 <- get_table(season = 2020, league = "Bundesliga")
-table_bl_0809 <- get_table(season = 2008, league = "Bundesliga")
-
-table_ll_0809 <- get_table(season = 2008, league = "La Liga")
-
-table_sa_1011 <- get_table(season = 2010, league = "Serie A")
-
-table_l1_1314 <- get_table(season = 2013, league = "Ligue 1")
+# ################################################################################
+# # get tables - TEST
+# ################################################################################
+# 
+# table_pl_2021 <- get_table(season = 2020, league = "Premier League")
+# table_pl_0809 <- get_table(season = 2008, league = "Premier League")
+# 
+# table_bl_2021 <- get_table(season = 2020, league = "Bundesliga")
+# table_bl_0809 <- get_table(season = 2008, league = "Bundesliga")
+# 
+# table_ll_0809 <- get_table(season = 2008, league = "La Liga")
+# 
+# table_sa_1011 <- get_table(season = 2010, league = "Serie A")
+# 
+# table_l1_1314 <- get_table(season = 2013, league = "Ligue 1")
 
 
 
