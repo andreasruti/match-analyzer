@@ -12,4 +12,4 @@ https://understat.com/
 - Ligue 1
 
 ## Seasons
-As from season 2014/15
+- from 2014/15
